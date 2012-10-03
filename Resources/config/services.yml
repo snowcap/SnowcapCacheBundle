@@ -1,0 +1,4 @@
+services:
+    snowcap_cache.manager:
+        class: Snowcap\CacheBundle\Manager\CacheManager
+        arguments: [%snowcap_cache.namespace%, %snowcap_cache.caches%]
