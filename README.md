@@ -22,41 +22,41 @@ Installation
 
 2. Add the Snowcap namespace to your autoloader:
 
-    // app/autoload.php
-    $loader->registerNamespaces(array(
-          'Snowcap' => __DIR__.'/../vendor/bundles',
-          // your other namespaces
-    ));
+        // app/autoload.php
+        $loader->registerNamespaces(array(
+            'Snowcap' => __DIR__.'/../vendor/bundles',
+            // your other namespaces
+        ));
 
 3. Add this bundle to your application's kernel:
 
-    // app/ApplicationKernel.php
-    public function registerBundles()
-    {
-        return array(
-            // ...
-            new Snowcap\CacheBundle\SnowcapCacheBundle(),
-            // ...
-        );
-    }
+        // app/ApplicationKernel.php
+        public function registerBundles()
+        {
+            return array(
+                // ...
+                new Snowcap\CacheBundle\SnowcapCacheBundle(),
+                // ...
+            );
+        }
 
 4. Add the configuration in your config.yml
 
-    snowcap_cache:
-        namespace: yournamspace
-        caches:
-            tweets:
-                type: memcached
-                options:
-                    server: localhost
-                    port: 11211
-                    ttl: 86400
-            flickr:
-                type: memcached
-                options:
-                    server: localhost
-                    port: 11211
-                    ttl: 45632
+        snowcap_cache:
+            namespace: yournamspace
+            caches:
+                tweets:
+                    type: memcached
+                    options:
+                        server: localhost
+                        port: 11211
+                        ttl: 86400
+                flickr:
+                    type: memcached
+                    options:
+                        server: localhost
+                        port: 11211
+                        ttl: 45632
 
 Running the tests
 -----------------
