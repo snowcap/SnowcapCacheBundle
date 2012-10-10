@@ -5,7 +5,7 @@ namespace Snowcap\CacheBundle\Tests\Cache;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Snowcap\CacheBundle\DependencyInjection\SnowcapCacheExtension;
 
-class MemcachedCacheTest extends \PHPUnit_Framework_TestCase
+class ApcCacheTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ContainerBuilder
@@ -14,6 +14,12 @@ class MemcachedCacheTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        if (!ini_get('apc.enable_cli')) {
+            if (!ini_set('apc.enable_cli', 1)) {
+                $this->markTestSkipped('apc.enable_cli should be On');
+            }
+        }
+
         $this->container = new ContainerBuilder();
         $extension = new SnowcapCacheExtension();
 
@@ -21,8 +27,8 @@ class MemcachedCacheTest extends \PHPUnit_Framework_TestCase
             'namespace' => 'SnowcapCacheBundle',
             'caches'    => array(
                 'default' => array(
-                    'type'    => 'memcached',
-                    'options' => array('server' => 'localhost', 'port' => 11211)
+                    'type'    => 'apc',
+                    'options' => array('ttl' => 3600)
                 )
             )
         );
@@ -39,7 +45,6 @@ class MemcachedCacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($info);
 
     }
-
 
     public function testSet()
     {

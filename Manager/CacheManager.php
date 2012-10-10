@@ -22,7 +22,8 @@ class CacheManager
     private $caches = array();
 
     private $cacheTypes = array(
-        'memcached' => 'Snowcap\CacheBundle\Cache\MemcachedCache'
+        'memcached' => 'Snowcap\CacheBundle\Cache\MemcachedCache',
+        'apc' => 'Snowcap\CacheBundle\Cache\ApcCache',
     );
 
     /**

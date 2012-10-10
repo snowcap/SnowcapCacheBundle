@@ -4,17 +4,17 @@ namespace Snowcap\CacheBundle\Cache;
 
 use Snowcap\CacheBundle\Exception\CacheException;
 
-class MemcachedCache extends AbstractCache
+class ApcCache extends AbstractCache
 {
-    /**
-     * @var \Memcached
-     */
-    private $driver;
-
     /**
      * @var int
      */
     private $ttl = 3600;
+
+    /**
+     * @var string
+     */
+    private $prefix;
 
     /**
      * @param string $namespace
@@ -24,14 +24,7 @@ class MemcachedCache extends AbstractCache
     public function __construct($namespace, $identifier, array $options)
     {
         parent::__construct($namespace, $identifier, $options);
-        $this->driver = new \Memcached();
-        $this->driver->setOption(\Memcached::OPT_PREFIX_KEY, $namespace . '.' . $identifier . '.');
-        if (!isset($options['server']) || !isset($options['port'])) {
-            throw new \InvalidArgumentException(sprintf('Memcached is expecting a "server" and "port" options'));
-        }
-        if (!$this->driver->addServer($options['server'], $options['port'])) {
-            throw new CacheException('The memcached server could not be added');
-        }
+        $this->prefix = $namespace . '.' . $identifier . '.';
         if (isset($options['ttl'])) {
             $this->ttl = $options['ttl'];
         }
@@ -44,7 +37,7 @@ class MemcachedCache extends AbstractCache
      */
     public function get($key)
     {
-        return $this->driver->get($key);
+        return apc_fetch($this->prefix . $key);
     }
 
     /**
@@ -53,7 +46,9 @@ class MemcachedCache extends AbstractCache
      */
     public function set($key, $value)
     {
-        $this->driver->set($key, $value, time() + $this->ttl);
+        if (!apc_store($this->prefix . $key, $value, $this->ttl)) {
+            throw new CacheException('Cannot store key/value pair in apc cache');
+        }
     }
 
     /**
@@ -61,7 +56,7 @@ class MemcachedCache extends AbstractCache
      */
     public function delete($key)
     {
-        $this->driver->delete($key);
+        apc_delete($this->prefix . $key);
     }
 
     /**
@@ -71,11 +66,7 @@ class MemcachedCache extends AbstractCache
      */
     public function isEnabled()
     {
-        if (!extension_loaded('memcached')) {
-            return false;
-        }
-
-        return true;
+        return extension_loaded('apc') && ini_get('apc.enabled');
     }
 
     /**
@@ -85,7 +76,7 @@ class MemcachedCache extends AbstractCache
      */
     public function getInfo()
     {
-        return $this->driver->getStats();
+        return @apc_cache_info();
     }
 
 
