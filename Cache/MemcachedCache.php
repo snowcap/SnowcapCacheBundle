@@ -19,7 +19,9 @@ class MemcachedCache extends AbstractCache
     /**
      * @param string $namespace
      * @param string $identifier
-     * @param array  $options
+     * @param array $options
+     * @throws \InvalidArgumentException
+     * @throws \Snowcap\CacheBundle\Exception\CacheException
      */
     public function __construct($namespace, $identifier, array $options)
     {
@@ -49,11 +51,14 @@ class MemcachedCache extends AbstractCache
 
     /**
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
+     * @throws \Snowcap\CacheBundle\Exception\CacheException
      */
     public function set($key, $value)
     {
-        $this->driver->set($key, $value, time() + $this->ttl);
+        if (!$this->driver->set($key, $value, time() + $this->ttl)) {
+            throw new CacheException('Cannot store key/value pair in memcached cache. Check that the memcached server is started.');
+        }
     }
 
     /**
@@ -71,11 +76,7 @@ class MemcachedCache extends AbstractCache
      */
     public function isEnabled()
     {
-        if (!extension_loaded('memcached')) {
-            return false;
-        }
-
-        return true;
+        return extension_loaded('memcached');
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Snowcap\CacheBundle\Manager;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Snowcap\CacheBundle\Cache\CacheInterface;
 
 class CacheManager
 {
@@ -10,17 +10,14 @@ class CacheManager
      * @var string
      */
     private $namespace;
-
     /**
      * @var array
      */
     private $cacheConfigs;
-
     /**
      * @var array
      */
     private $caches = array();
-
     private $cacheTypes = array(
         'memcached' => 'Snowcap\CacheBundle\Cache\MemcachedCache',
         'apc' => 'Snowcap\CacheBundle\Cache\ApcCache',
@@ -28,7 +25,7 @@ class CacheManager
 
     /**
      * @param string $namespace
-     * @param array  $caches
+     * @param array $cacheConfigs
      */
     public function __construct($namespace, array $cacheConfigs)
     {
@@ -36,6 +33,10 @@ class CacheManager
         $this->cacheConfigs = $cacheConfigs;
     }
 
+    /**
+     * @param string $cacheIdentifier
+     * @return CacheInterface
+     */
     public function getCache($cacheIdentifier)
     {
         if (!isset($this->caches[$cacheIdentifier])) {
@@ -45,6 +46,11 @@ class CacheManager
         return $this->caches[$cacheIdentifier];
     }
 
+    /**
+     * @param string $cacheIdentifier
+     * @return CacheInterface
+     * @throws \InvalidArgumentException
+     */
     private function buildCache($cacheIdentifier)
     {
         if (!isset($this->cacheConfigs[$cacheIdentifier])) {

@@ -42,12 +42,13 @@ class ApcCache extends AbstractCache
 
     /**
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
+     * @throws \Snowcap\CacheBundle\Exception\CacheException
      */
     public function set($key, $value)
     {
         if (!apc_store($this->prefix . $key, $value, $this->ttl)) {
-            throw new CacheException('Cannot store key/value pair in apc cache');
+            throw new CacheException('Cannot store key/value pair in apc cache. Check your configuration.');
         }
     }
 
