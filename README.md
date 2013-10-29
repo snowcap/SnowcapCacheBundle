@@ -48,6 +48,22 @@ Installation
                         port: 11211
                         ttl: 45632
 
+Usage
+-----
+
+        $cacheManager = $this->get('snowcap_cache.manager');
+
+        $cache = $cacheManager->getCache('tweets');
+
+        if ($cache->isEnabled()) {
+            if (false === $tweets = $cache->get('tweets')) {
+                $tweets = $this->getTweets();
+                $cache->set('tweets', $tweets);
+            }
+        } else {
+            $tweets = $this->getTweets();
+        }
+
 Running the tests
 -----------------
 
