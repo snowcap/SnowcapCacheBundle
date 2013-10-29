@@ -3,32 +3,22 @@ Introduction
 
 This bundle is used to provide access to cache drivers.
 
-This is a work in progress with only one driver : Memcached
+This is a work in progress with two drivers: Memcached and APC.
 
 Installation
 ------------
 
 1. Add this bundle to your ``vendor/`` dir:
 
-    Add the following lines in your ``deps`` file::
+    Add the following line in your ``composer.json`` file:
 
-        [SnowcapCacheBundle]
-            git=git://github.com/snowcap/SnowcapCacheBundle.git
-            target=/bundles/Snowcap/CacheBundle
+        "snowcap/cache-bundle": "dev-master",
 
-    Run the vendors script:
+    Run composer:
 
-        ./bin/vendors install
+        composer update snowcap/cache-bundle
 
-2. Add the Snowcap namespace to your autoloader:
-
-        // app/autoload.php
-        $loader->registerNamespaces(array(
-            'Snowcap' => __DIR__.'/../vendor/bundles',
-            // your other namespaces
-        ));
-
-3. Add this bundle to your application's kernel:
+2. Add this bundle to your application's kernel:
 
         // app/ApplicationKernel.php
         public function registerBundles()
@@ -40,7 +30,7 @@ Installation
             );
         }
 
-4. Add the configuration in your config.yml
+3. Add the configuration in your config.yml file
 
         snowcap_cache:
             namespace: yournamspace
@@ -57,6 +47,22 @@ Installation
                         server: localhost
                         port: 11211
                         ttl: 45632
+
+Usage
+-----
+
+        $cacheManager = $this->get('snowcap_cache.manager');
+
+        $cache = $cacheManager->getCache('tweets');
+
+        if ($cache->isEnabled()) {
+            if (false === $tweets = $cache->get('tweets')) {
+                $tweets = $this->getTweets();
+                $cache->set('tweets', $tweets);
+            }
+        } else {
+            $tweets = $this->getTweets();
+        }
 
 Running the tests
 -----------------
